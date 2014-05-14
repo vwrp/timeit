@@ -19,10 +19,6 @@ unsigned long end = 5000;
 // after the led was switched on
 unsigned long timeout = 5000;
 
-// rate in milliseconds at which the 
-// button is checked for beeing pressed
-unsigned long rate = 100;
-
 // buffer for reaction time
 unsigned long react_time = 0;
 
@@ -43,14 +39,12 @@ unsigned long react_time = 0;
  * \param timeout      The measurment is aborted if
  *                     timeout milliseconds have passed
  *                     after the led was switched on
- * \param rate         Rate in milliseconds at which the
- *                     button is checked for beeing pressed
  *
  * @return             Returns true if the mesurement was
  *                     successfull, if the timeout is reached,
  *                     false is returned
  */
-bool measure(unsigned long & react_time, unsigned long & start, unsigned long & end, unsigned long & timeout, unsigned long & rate) {
+bool measure(unsigned long & react_time, unsigned long & start, unsigned long & end, unsigned long & timeout) {
 
     // success of the measurement 
     bool success=false;
@@ -83,7 +77,6 @@ bool measure(unsigned long & react_time, unsigned long & start, unsigned long & 
             success=true;
         }
         Serial.println(passed_time);
-        delay(rate);
         passed_time = millis()-start_time;
     }
     // switch of led
@@ -96,7 +89,7 @@ bool measure(unsigned long & react_time, unsigned long & start, unsigned long & 
  *        parameter for the reaction measurement
  *        from the device over a serial connection
  */
-void receiveParameter(unsigned long & start, unsigned long & end, unsigned long & timeout, unsigned long & rate) {
+void receiveParameter(unsigned long & start, unsigned long & end, unsigned long & timeout) {
 
     // wait until serial communication is received
 	while (!Serial.available());
@@ -138,9 +131,9 @@ void setup() {
  
 void loop() {
     // wait for device to send start signal together with parameters
-    receiveParameter(start, end, timeout, rate);
+    receiveParameter(start, end, timeout);
     // perform measurement
-    bool success = measure(react_time, start, end, timeout, rate);
+    bool success = measure(react_time, start, end, timeout);
     // send reaction time or fail signal to device
     if (success) {
         sendReactTime(react_time);
